@@ -57,4 +57,4 @@ jobs:
           az webapp config set \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --name ${{ env.WEBAPP_NAME }} \
-            --startup-file "uvicorn main:app --host 0.0.0.0 --port 8000"
+            --startup-file "uvicorn app:app --host 0.0.0.0 --port 8000"
