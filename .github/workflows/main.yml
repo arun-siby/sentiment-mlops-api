@@ -1,0 +1,60 @@
+#This workflow is triggered whenever code is pushed to the 'main' branch.
+name: Azure CI/CD for Sentiment API
+
+on: 
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+
+env:
+#Environment Variables used throughout the pipeline
+  AZURE_CR_LOGIN_SERVER: ${{ secrets.AZURE_CR_LOGIN_SERVER }} # acrmlopsas04we.azurecr.io
+  ACR_IMAGE_NAME: sentiment-api
+  ACR_TAG: latest
+  RESOURCE_GROUP_NAME: ${{ secrets.RESOURCE_GROUP_NAME }}   # rg-mlops-as04-we
+  WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }}                 # app-mlops-as04-we
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Azure Login (This step is now passing!)
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 2. Build and Push to ACR
+      - name: Build and Push Docker Image
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.AZURE_CR_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_CLIENT_ID }}      # Use the new Client ID secret
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}  # Use the new Client Secret
+      - run: |
+          docker build . -t ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
+          docker push ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
+          
+      # 3. Deploy to Azure Web App
+      # Deploys the newly pushed image from ACR to the App Service
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.WEBAPP_NAME }}
+          images: ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
+  
+      # 4. FIX: Set Startup Command (Needed for FastAPI)
+      # This uses the correct CLI command to set the uvicorn startup command AFTER deployment
+      - name: Set FastAPI Startup Command Fix
+        run: |
+          az webapp config set \
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --name ${{ env.WEBAPP_NAME }} \
+            --startup-command "uvicorn main:app --host 0.0.0.0 --port 8000"
