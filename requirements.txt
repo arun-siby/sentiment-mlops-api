@@ -1,6 +1,18 @@
-fastapi==0.103.2
-uvicorn==0.23.2
-pydantic==2.4.2
-transformers==4.37.0
-prometheus-client==0.19.0
-torch==2.1.2
+Core application dependencies for FastAPI and Uvicorn
+
+fastapi
+uvicorn
+
+Machine Learning library for the sentiment pipeline
+
+transformers
+
+FIX: The model output post-processing requires numpy to convert tensors to arrays.
+
+This dependency must be explicitly included.
+
+numpy
+
+PyTorch is usually required as a backend for the transformer model
+
+torch
