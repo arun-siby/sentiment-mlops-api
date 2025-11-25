@@ -1,0 +1,54 @@
+dependencies
+
+/node_modules
+/.pnp
+.pnp.js
+
+testing
+
+/coverage
+
+production
+
+/build
+/dist
+/tmp
+
+misc
+
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.vscode/
+
+Python artifacts
+
+pycache/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+Jupyter Notebook files
+
+.ipynb_checkpoints
+
+Virtual Environments
+
+/venv
+/env
+
+Docker
+
+Ignore Docker-related artifacts like build cache and volumes
+
+.dockerignore
+
+Docker volumes are where Prometheus data is usually stored locally, we don't commit it.
+
+While we didn't explicitly map the data volume, we exclude the default files just in case:
+
+/prometheus_data/
+/grafana_data/
