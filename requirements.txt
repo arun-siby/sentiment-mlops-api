@@ -1,18 +1,18 @@
-Core application dependencies for FastAPI and Uvicorn
+#Core application dependencies for FastAPI and Uvicorn
 
 fastapi
 uvicorn
 
-Machine Learning library for the sentiment pipeline
+#Machine Learning library for the sentiment pipeline
 
 transformers
 
-FIX: The model output post-processing requires numpy to convert tensors to arrays.
+#FIX: The model output post-processing requires numpy to convert tensors to arrays.
 
-This dependency must be explicitly included.
+#This dependency must be explicitly included.
 
 numpy
 
-PyTorch is usually required as a backend for the transformer model
+#PyTorch is usually required as a backend for the transformer model
 
 torch
