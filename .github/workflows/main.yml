@@ -31,18 +31,17 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 2. Build and Push to ACR (*** FOCUS ON THIS SECTION ***)
+      # 2. Build and Push to ACR
       - name: Build and Push Docker Image
         uses: azure/docker-login@v2
         with:
           login-server: ${{ env.AZURE_CR_LOGIN_SERVER }}
-          username: ${{ env.AZURE_CR_LOGIN_SERVER }}
-          # The value for 'password' must come from the JSON secret's 'clientSecret' field
-          password: ${{ secrets.AZURE_CREDENTIALS.clientSecret }} 
+          username: ${{ secrets.AZURE_CLIENT_ID }}      # Use the new Client ID secret
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}  # Use the new Client Secret
       - run: |
           docker build . -t ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
           docker push ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
-
+          
       # 3. Deploy to Azure Web App
       # Deploys the newly pushed image from ACR to the App Service
       - name: Deploy to Azure Web App
