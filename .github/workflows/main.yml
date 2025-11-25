@@ -14,7 +14,8 @@ env:
   ACR_TAG: latest
   RESOURCE_GROUP_NAME: ${{ secrets.RESOURCE_GROUP_NAME }}   # rg-mlops-as04-we
   WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }}                 # app-mlops-as04-we
-  
+
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,21 +25,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Azure Login: Authenticates the workflow using the Service Principal JSON secret
+      # 1. Azure Login (This step is now passing!)
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 2. Build and Push to ACR
-      # This step builds the Docker image and pushes it to your private Azure Container Registry (ACR)
+      # 2. Build and Push to ACR (*** FOCUS ON THIS SECTION ***)
       - name: Build and Push Docker Image
         uses: azure/docker-login@v2
         with:
           login-server: ${{ env.AZURE_CR_LOGIN_SERVER }}
-          # ACR Admin Credentials (enabled earlier via CLI) are used for login
           username: ${{ env.AZURE_CR_LOGIN_SERVER }}
-          password: ${{ secrets.AZURE_CREDENTIALS.clientSecret }} # Reusing the clientSecret as the ACR password
+          # The value for 'password' must come from the JSON secret's 'clientSecret' field
+          password: ${{ secrets.AZURE_CREDENTIALS.clientSecret }} 
       - run: |
           docker build . -t ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
           docker push ${{ env.AZURE_CR_LOGIN_SERVER }}/${{ env.ACR_IMAGE_NAME }}:${{ env.ACR_TAG }}
