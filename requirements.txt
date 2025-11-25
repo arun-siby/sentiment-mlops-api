@@ -1,18 +1,16 @@
-#Core application dependencies for FastAPI and Uvicorn
+#Core application dependencies
 
 fastapi
-uvicorn
+uvicorn[standard]
 
-#Machine Learning library for the sentiment pipeline
+#ML Dependencies for Hugging Face Transformers
 
 transformers
 
-#FIX: The model output post-processing requires numpy to convert tensors to arrays.
-
-#This dependency must be explicitly included.
+#Required for tensor manipulation and post-processing
 
 numpy
 
-#PyTorch is usually required as a backend for the transformer model
+#PyTorch is the underlying framework for many HuggingFace models
 
 torch
